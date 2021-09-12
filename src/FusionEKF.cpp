@@ -69,7 +69,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   	  double rho_dot = measurement_pack.raw_measurements_[2]; // Velocity = The projection of the velocity, v, onto the line L
       
       double x = rho * cos(phi); 
-      double x = rho * sin(phi); 
+      double y = rho * sin(phi); 
       
       double vx = rho_dot * cos(phi);
   	  double vy = rho_dot * sin(phi);
@@ -118,10 +118,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
              0, 0, 1, 0,
              0, 0, 0, 1;
   
-   // Noise covariance matrix computation
+  // Noise covariance matrix computation
   // Noise values from the task
-  double noise_ax = 9.0;
-  double noise_ay = 9.0;
 
   double dt_2 = pow(dt,2); // (delta time)^2
   double dt_3 = pow(dt,3); // (delta time)^3
