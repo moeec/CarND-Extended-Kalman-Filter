@@ -22,80 +22,26 @@ VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
   rmse << 0,0,0,0;
   VectorXd rmse_precal(4);
   rmse_precal << 0,0,0,0;
+  unsigned int n = estimations.size();
 
   // the input list of estimations
 
   for(unsigned int i=0; i < estimations.size(); ++i)
   {
   
-    VectorXd_dt = estimations[i] - ground_truth[i];
-      delta = delta.array()*delta.array();
-      rmse_precal += delta;
+    VectorXd est_gnd_truth_dt = estimations[i] - ground_truth[i];
+      est_gnd_truth_dt = est_gnd_truth_dt.array()*est_gnd_truth_dt.array();
+      rmse_precal += est_gnd_truth_dt;
     
   }
 
-  rmse = rmse_pecal / n;
+  rmse = rmse_precal / n;
   rmse = rmse.array().sqrt();
   
   return rmse;
   // call the CalculateRMSE and print out the result
   //cout << CalculateRMSE(estimations, ground_truth) << endl;
-
-
   //return 0;
-}
-
-VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
-    const vector<VectorXd> &ground_truth) {
-
-  VectorXd rmse(4);
-  rmse << 0,0,0,0;
-
-  // check the validity of the following inputs:
-  //  * the estimation vector size should not be zero
-  //  * the estimation vector size should equal ground truth vector size
-  if (estimations.size() != ground_truth.size()
-      || estimations.size() == 0) {
-    cout << "Invalid estimation or ground_truth data" << endl;
-    return rmse;
-  }
-
-  // accumulate squared residuals
-  for (unsigned int i=0; i < estimations.size(); ++i) {
-
-    VectorXd residual = estimations[i] - ground_truth[i];
-
-    // coefficient-wise multiplication
-    residual = residual.array()*residual.array();
-    rmse += residual;
-  }
-
-  // calculate the mean
-  rmse = rmse/estimations.size();
-
-  // calculate the squared root
-  rmse = rmse.array().sqrt();
-
-  // return the result
-  return rmse;
-}
-
-
-MatrixXd CalculateJacobian(const VectorXd& x_state) {
-  /**
-   * Compute the Jacobian Matrix
-   */
-
-  // predicted state example
-  // px = 1, py = 2, vx = 0.2, vy = 0.4
-  VectorXd x_predicted(4);
-  x_predicted << 1, 2, 0.2, 0.4;
-
-  MatrixXd Hj = CalculateJacobian(x_predicted);
-
-  cout << "Hj:" << endl << Hj << endl;
-
-  return 0;
 }
 
 
@@ -124,3 +70,4 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
       py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
 
   return Hj;
+}
