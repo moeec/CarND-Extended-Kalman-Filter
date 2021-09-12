@@ -21,6 +21,7 @@ int main() {
    */
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
+  VectorXd rmse(4);
 
   // the input list of estimations
   VectorXd e(4);
