@@ -37,6 +37,15 @@ FusionEKF::FusionEKF() {
    * TODO: Finish initializing the FusionEKF.
    * TODO: Set the process and measurement noises
    */
+  
+  ekf_.P_ = MatrixXd(4, 4);
+  ekf_.P_ << 1, 0, 0, 0,
+             0, 1, 0, 0,
+             0, 0, 1000, 0,
+             0, 0, 0, 1000;
+
+  H_laser_ << 1, 0, 0, 0,
+              0, 1, 0, 0;
 
 
 }
@@ -117,6 +126,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
              0, 1, 0, dt,
              0, 0, 1, 0,
              0, 0, 0, 1;
+  ekf_.F_ = MatrixXd(4, 4);
+  MatrixXd Ft =  ekf_.F_.transpose();
   
   // Noise covariance matrix computation
   // Noise values from the task
@@ -131,6 +142,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 	         0, dt_4_4 * noise_ay, 0, dt_3_2 * noise_ay,
 	         dt_3_2 * noise_ax, 0, dt_2 * noise_ax, 0,
  	         0, dt_3_2 * noise_ay, 0, dt_2 * noise_ay;
+  // P_ = FPF-T +Q
+  
+  ekf_.P_ = ekf_.F_ * ekf_.P_ * Ft + ekf_.Q_;
   
   ekf_.Predict();
 
