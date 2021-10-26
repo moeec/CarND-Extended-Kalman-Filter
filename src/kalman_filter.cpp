@@ -15,7 +15,8 @@ KalmanFilter::KalmanFilter() {}
 KalmanFilter::~KalmanFilter() {}
 
 void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
-                        MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) {
+                        MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) 
+{
   x_ = x_in;  // object state
   P_ = P_in;  // object covariance matrix
   F_ = F_in;  // state transition matrix
@@ -24,7 +25,8 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   Q_ = Q_in; // process covariance matrix
 }
 
-void KalmanFilter::Predict() {
+void KalmanFilter::Predict() 
+{
   /**
    * TODO: predict the state  
    * u is external motion
@@ -34,7 +36,8 @@ void KalmanFilter::Predict() {
   P_ = F_ * P_ * Ft + Q_;
 }
 
-void KalmanFilter::Update(const VectorXd &z) {
+void KalmanFilter::Update(const VectorXd &z) 
+{
   /**
    * TODO: update the state by using Kalman Filter equations
    */
@@ -56,7 +59,8 @@ void KalmanFilter::Update(const VectorXd &z) {
   
 }
 
-void KalmanFilter::UpdateEKF(const VectorXd &z) {
+void KalmanFilter::UpdateEKF(const VectorXd &z) 
+{
   
   // TODO: update the state by using Extended Kalman Filter equations
 
