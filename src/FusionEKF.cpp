@@ -84,13 +84,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
       double x = rho * cos(phi);
       std::cout << "x for Radar is " << x << std::endl;
       
-      if ( x < 0.0001 ) {
+      if ( x < 0.0001 ) 
+      {
         x = 0.0001;
       }
       
       double y = rho * sin(phi); 
       std::cout << "y for Radar is " << y << std::endl;
-      if ( y < 0.0001 ) {
+      if ( y < 0.0001 ) 
+      {
         y = 0.0001;
       }
       
@@ -142,8 +144,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
              0, 0, 0, 1;
   
   // Noise covariance matrix computation
-  double noise_ax = 9;
-  double noise_ay = 9;
+  double noise_ax = 9.00;
+  double noise_ay = 9.00;
   
   
   // Pre-calculations for variables in matrix
