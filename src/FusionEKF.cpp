@@ -69,6 +69,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 1, 1, 1, 1;
+    
+    
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // TODO: Convert radar from polar to cartesian coordinates 
@@ -77,8 +79,18 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   	  double phi = measurement_pack.raw_measurements_[1]; // bearing = atan(py/px) 
   	  double rho_dot = measurement_pack.raw_measurements_[2]; // Velocity = The projection of the velocity, v, onto the line L
       
-      double x = rho * cos(phi); 
+      double x = rho * cos(phi);
+      std::cout << "x for Radar is " << x << std::endl;
+      
+      if ( x < 0.0001 ) {
+        x = 0.0001;
+      }
+      
       double y = rho * sin(phi); 
+      std::cout << "y for Radar is " << y << std::endl;
+      if ( y < 0.0001 ) {
+        y = 0.0001;
+      }
       
       double vx = rho_dot * cos(phi);
   	  double vy = rho_dot * sin(phi);
@@ -95,7 +107,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     }
 
     // done initializing, no need to predict or update
-    // Saving first timestamp in seconds
+    // Saving first timestamp in second
     previous_timestamp_ = measurement_pack.timestamp_ ;
     is_initialized_ = true;
     return;
@@ -126,8 +138,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
              0, 1, 0, dt,
              0, 0, 1, 0,
              0, 0, 0, 1;
-  ekf_.F_ = MatrixXd(4, 4);
-  MatrixXd Ft =  ekf_.F_.transpose();
+  std::cout << "Initialization in EKF F_ " << ekf_.F_ << std::endl;
   
   // Noise covariance matrix computation
   // Noise values from the task
@@ -144,8 +155,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
  	         0, dt_3_2 * noise_ay, 0, dt_2 * noise_ay;
   // P_ = FPF-T +Q
   
-  ekf_.P_ = ekf_.F_ * ekf_.P_ * Ft + ekf_.Q_;
-  
+  //ekf_.P_ = ekf_.F_ * ekf_.P_ * Ft + ekf_.Q_;
   ekf_.Predict();
 
   /**
@@ -161,6 +171,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // TODO: Radar updates
     
+    std::cout << "Predict in EKF x_ " << ekf_.x_ << std::endl;
+    std::cout << "Predict in EKF F_ " << ekf_.F_ << std::endl;
     ekf_.H_ = tools.CalculateJacobian(ekf_.x_);
   	ekf_.R_ = R_radar_;
   	ekf_.UpdateEKF(measurement_pack.raw_measurements_);
