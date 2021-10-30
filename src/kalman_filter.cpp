@@ -83,8 +83,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z)
     VectorXd y = z - z_pred;
 
     // normalize angle
-    double width = 2 * M_PI;   //
-    double offsetValue = y(1) + M_PI;   // value relative to 0
+    float width = 2 * M_PI;   //
+    float offsetValue = y(1) + M_PI;   // value relative to 0
     y(1) = (offsetValue - (floor(offsetValue / width) * width)) - M_PI;
 
     MatrixXd PHt = P_ * H_.transpose();
