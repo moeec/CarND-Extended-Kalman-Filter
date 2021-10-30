@@ -40,10 +40,10 @@ FusionEKF::FusionEKF()
    */
   
   ekf_.P_ = MatrixXd(4, 4);
-  ekf_.P_ << 1, 0, 0, 0,
-             0, 1, 0, 0,
-             0, 0, 1000, 0,
-             0, 0, 0, 1000;
+  ekf_.P_ << 10, 0, 0, 0,
+             0, 10, 0, 0,
+             0, 0, 100, 0,
+             0, 0, 0, 100;
 
   H_laser_ << 1, 0, 0, 0,
               0, 1, 0, 0;
@@ -144,8 +144,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
              0, 0, 0, 1;
   
   // Noise covariance matrix computation
-  double noise_ax = 9.00;
-  double noise_ay = 9.00;
+  double noise_ax = 8.95;
+  double noise_ay = 8.95;
   
   
   // Pre-calculations for variables in matrix
