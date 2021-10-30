@@ -69,19 +69,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
     // first measurement
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
-    ekf_.x_ << 1, 1, 1, 1;
-    
-    
+    ekf_.x_ << 1, 1, 1, 1; 
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) 
     {
       // TODO: Convert radar from polar to cartesian coordinates 
       //         and initialize state.
-      double rho = measurement_pack.raw_measurements_[0]; // range = the magnitude of ρ
-  	  double phi = measurement_pack.raw_measurements_[1]; // bearing = atan(py/px) 
-  	  double rho_dot = measurement_pack.raw_measurements_[2]; // Velocity = The projection of the velocity, v, onto the line L
+      float rho = measurement_pack.raw_measurements_[0];     // range = the magnitude of ρ
+  	  float phi = measurement_pack.raw_measurements_[1];     // bearing = atan(py/px) 
+  	  float rho_dot = measurement_pack.raw_measurements_[2]; // Velocity = The projection of the velocity, v, onto the line L
       
-      double x = rho * cos(phi);
+      float x = rho * cos(phi);
+      
+      // Normalize phi to [-pi, pi]
+      while (phi > M_PI)  phi -= 2.0 * M_PI;
+      while (phi <-M_PI) phi += 2.0 * M_PI;
+      
       std::cout << "x for Radar is " << x << std::endl;
       
       if ( x < 0.0001 ) 
@@ -89,15 +92,16 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
         x = 0.0001;
       }
       
-      double y = rho * sin(phi); 
+      float y = rho * sin(phi); 
+      
       std::cout << "y for Radar is " << y << std::endl;
       if ( y < 0.0001 ) 
       {
         y = 0.0001;
       }
       
-      double vx = rho_dot * cos(phi);
-  	  double vy = rho_dot * sin(phi);
+      float vx = rho_dot * cos(phi);
+  	  float vy = rho_dot * sin(phi);
       
       ekf_.x_ << x, y, vx , vy;
 
@@ -113,6 +117,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
 
     // done initializing, no need to predict or update
     // Saving first timestamp in second
+    cout << "EKF initialization: " << ekf_.x_ << endl;
     previous_timestamp_ = measurement_pack.timestamp_ ;
     is_initialized_ = true;
     return;
@@ -131,7 +136,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
   
 
   
-  double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
+  float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
   
     
@@ -144,16 +149,16 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
              0, 0, 0, 1;
   
   // Noise covariance matrix computation
-  double noise_ax = 8.95;
-  double noise_ay = 8.95;
+  float noise_ax = 8.95;
+  float noise_ay = 8.95;
   
   
   // Pre-calculations for variables in matrix
-  double dt_2 = pow(dt,2); // (delta time)^2
-  double dt_3 = pow(dt,3); // (delta time)^3
-  double dt_4 = pow(dt,4); // (delta time)^4
-  double dt_4_4 = dt_4 / 4;// ((delta time)^4)/4
-  double dt_3_2 = dt_3 / 2; //((delta time)^3)/2
+  float dt_2 = pow(dt,2); // (delta time)^2
+  float dt_3 = pow(dt,3); // (delta time)^3
+  float dt_4 = pow(dt,4); // (delta time)^4
+  float dt_4_4 = dt_4 / 4;// ((delta time)^4)/4
+  float dt_3_2 = dt_3 / 2; //((delta time)^3)/2
   ekf_.Q_ = MatrixXd(4, 4);
   ekf_.Q_ << dt_4_4 * noise_ax, 0, dt_3_2 * noise_ax, 0,
 	         0, dt_4_4 * noise_ay, 0, dt_3_2 * noise_ay,
